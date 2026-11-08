@@ -459,6 +459,7 @@
     document.title = (title ? title + ' — ' : '') + t('title_suffix');
     document.querySelectorAll('.nav a').forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('href') === '#' + active); });
     closeMenu(); closeBooking(); closeCart(); enhance(); updateHeaderTone(); updateTotop();
+    if (header) { header.classList.remove('is-hidden'); lastY = window.scrollY; }
   }
 
   /* ---------- Каркас ---------- */
@@ -574,6 +575,17 @@
         '<button class="btn" data-close-booking>' + t('done') + '</button></div>';
     }
   });
+  /* Шапка: режим 'hide' — прячется при прокрутке вниз, появляется при прокрутке вверх */
+  var headerMode = S.settings.headerMode || 'static', lastY = window.scrollY;
+  function updateHeaderHide() {
+    if (headerMode !== 'hide') return;
+    var y = window.scrollY, dy = y - lastY;
+    if (y < 120 || dy < -6) header.classList.remove('is-hidden');
+    else if (dy > 6) header.classList.add('is-hidden');
+    if (Math.abs(dy) > 6 || y < 120) lastY = y;
+  }
+  window.addEventListener('scroll', updateHeaderHide, { passive: true });
+
   /* Кнопка «наверх»: появляется после ~1,5 экрана прокрутки */
   var totop = document.getElementById('totop');
   function updateTotop() { totop.classList.toggle('is-visible', window.scrollY > window.innerHeight * 1.5); }

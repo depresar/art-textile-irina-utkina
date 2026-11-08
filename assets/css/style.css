@@ -510,3 +510,7 @@ fieldset.field legend { font-family: var(--label); font-size: 10px; letter-spaci
 .totop:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
 .totop:hover svg { transform: translateY(-2px); }
 @media (max-width: 600px) { .totop { width: 46px; height: 46px; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); } }
+
+/* Режим шапки 'hide' */
+.header { transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
+.header.is-hidden { transform: translateY(calc(-100% - env(safe-area-inset-top, 0px) - 4px)); }
