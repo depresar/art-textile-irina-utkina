@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 150" width="720" height="300">
+  <!-- Тестовый логотип: монограмма IU + словесный знак. Шрифты: Tenor Sans / Cormorant Garamond -->
+  <rect width="360" height="150" fill="#F3F4F5"/>
+  <g transform="translate(148 6)" fill="none" stroke="#221F27" stroke-width="1.4">
+    <path d="M17 14v36M12.5 14h9M12.5 50h9"/><path d="M29 14v22a10.5 10.5 0 0 0 21 0V8"/><path d="M24.5 14h9"/>
+    <path d="M50 8c0-3 3.2-5.6 7-6-0.3 4-3.2 6.6-7 6z" fill="#A9566F" stroke="none"/>
+  </g>
+  <text x="180" y="104" text-anchor="middle" font-family="'Tenor Sans', 'Helvetica Neue', Arial, sans-serif" font-size="22" letter-spacing="9" fill="#221F27">IRINA UTKINA</text>
+  <text x="180" y="132" text-anchor="middle" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-size="16" letter-spacing="1" fill="#6E6A75">арт текстиль</text>
+</svg>
