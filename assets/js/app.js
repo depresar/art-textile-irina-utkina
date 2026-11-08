@@ -458,12 +458,13 @@
     } else if (keepScroll !== true) window.scrollTo(0, 0);
     document.title = (title ? title + ' — ' : '') + t('title_suffix');
     document.querySelectorAll('.nav a').forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('href') === '#' + active); });
-    closeMenu(); closeBooking(); closeCart(); enhance(); updateHeaderTone();
+    closeMenu(); closeBooking(); closeCart(); enhance(); updateHeaderTone(); updateTotop();
   }
 
   /* ---------- Каркас ---------- */
   function shell() {
     document.documentElement.lang = lang;
+    document.getElementById('totop').setAttribute('aria-label', t('to_top'));
     var navL = '<a href="#catalog">' + t('nav_catalog') + '</a><a href="#masterclasses">' + t('nav_mk') + '</a>';
     var navR = '<a href="#portfolio">' + t('nav_portfolio') + '</a><a href="#contacts">' + t('nav_contacts') + '</a>';
     header = document.getElementById('header');
@@ -573,6 +574,11 @@
         '<button class="btn" data-close-booking>' + t('done') + '</button></div>';
     }
   });
+  /* Кнопка «наверх»: появляется после ~1,5 экрана прокрутки */
+  var totop = document.getElementById('totop');
+  function updateTotop() { totop.classList.toggle('is-visible', window.scrollY > window.innerHeight * 1.5); }
+  totop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); });
+  window.addEventListener('scroll', updateTotop, { passive: true });
   window.addEventListener('scroll', updateHeaderTone, { passive: true });
   window.addEventListener('resize', updateHeaderTone);
   window.addEventListener('load', updateHeaderTone);

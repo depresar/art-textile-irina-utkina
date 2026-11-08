@@ -492,3 +492,21 @@ fieldset.field legend { font-family: var(--label); font-size: 10px; letter-spaci
 @media (max-width: 374px) {
   .header__tools .lang { display: none; } /* на самых узких экранах язык — в меню */
 }
+
+/* ---------- Кнопка «наверх» ---------- */
+.totop {
+  position: fixed; z-index: 45;
+  right: calc(max(16px, env(safe-area-inset-right, 0px)) + 8px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+  width: 52px; height: 52px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--white); color: var(--ink);
+  border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(20, 17, 24, .12);
+  opacity: 0; visibility: hidden; transform: translateY(12px);
+  transition: opacity .4s ease, transform .4s ease, visibility .4s, background .25s, color .25s;
+}
+.totop svg { width: 20px; height: 20px; transition: transform .3s ease; }
+.totop.is-visible { opacity: 1; visibility: visible; transform: none; }
+.totop:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.totop:hover svg { transform: translateY(-2px); }
+@media (max-width: 600px) { .totop { width: 46px; height: 46px; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); } }

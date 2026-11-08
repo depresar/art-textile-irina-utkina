@@ -71,6 +71,7 @@ window.I18N = {
       copyright: 'Арт текстиль Ирины Уткиной',
       cookie_text: 'Сайт использует файлы cookie и хранилище браузера: они запоминают язык, содержимое корзины и ваш выбор, а также помогают нам понять, как улучшить сайт. Продолжая пользоваться сайтом, вы соглашаетесь с <a href="#cookies">политикой использования cookie</a>.',
       cookie_ok: 'Понятно', legal_note: '',
+      to_top: 'Наверх',
       title_suffix: 'Ирина Уткина'
     },
     en: {
@@ -140,6 +141,7 @@ window.I18N = {
       copyright: 'Art textile by Irina Utkina',
       cookie_text: 'This site uses cookies and browser storage to remember your language, your bag and your choices, and to help us improve the site. By continuing to use the site you agree to the <a href="#cookies">cookie policy</a>.',
       cookie_ok: 'Got it', legal_note: 'Legal documents are published in Russian, as required by Russian law.',
+      to_top: 'Back to top',
       title_suffix: 'Irina Utkina'
     }
   },
