@@ -16,6 +16,15 @@
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+<div class="preloader" id="preloader" aria-hidden="true">
+  <svg class="preloader__mono" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.1">
+    <path pathLength="1" d="M17 14v36"/><path pathLength="1" d="M12.5 14h9"/><path pathLength="1" d="M12.5 50h9"/>
+    <path pathLength="1" d="M29 14v22a10.5 10.5 0 0 0 21 0V8"/><path pathLength="1" d="M24.5 14h9"/>
+    <path class="leaf" d="M50 8c0-3 3.2-5.6 7-6-0.3 4-3.2 6.6-7 6z" fill="currentColor" stroke="none"/>
+  </svg>
+  <div class="preloader__word"><span>I</span><span>R</span><span>I</span><span>N</span><span>A</span><span>&nbsp;</span><span>U</span><span>T</span><span>K</span><span>I</span><span>N</span><span>A</span></div>
+  <div class="preloader__sub">арт текстиль</div>
+</div>
 <header class="header" id="header"></header>
 <div class="mobile-menu" id="menu" hidden></div>
 <main id="app"></main>
@@ -23,6 +32,7 @@
 <div class="overlay" id="overlay" hidden></div>
 <aside class="drawer" id="drawer" hidden aria-label="Корзина"></aside>
 <div class="lightbox" id="lightbox" hidden><button class="close" data-lightbox-close>Закрыть</button><img alt=""></div>
+<div class="modal" id="booking" hidden></div>
 <div class="toast" id="toast" hidden role="status"></div>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js"></script>

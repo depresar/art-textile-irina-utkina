@@ -9,6 +9,7 @@
 - `assets/css/style.css` — стили (цвета и шрифты — в начале файла).
 - `assets/img/products/pN-M.jpg` — фото товара N; `assets/img/craft/` — фото тканей и мастер-класса.
 - `assets/img/logo.svg`, `favicon.svg` — тестовый логотип (монограмма IU).
+- `assets/video/process.mp4` — вертикальное видео процесса (сжато до 540×960).
 
 ## Публикация
 GitHub → Settings → Pages → Source: **Deploy from a branch**, Branch: `main`, папка `/ (root)` → Save.
@@ -16,4 +17,4 @@ GitHub → Settings → Pages → Source: **Deploy from a branch**, Branch: `mai
 
 ## Что пока демо
 - Форма заказа в корзине никуда не отправляет заявки (нужно подключить Telegram-бота, почту или оплату).
-- Видео процесса — заглушка.
+- Запись на мастер-класс: даты и время демонстрационные, заявки никуда не отправляются.

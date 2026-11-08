@@ -19,10 +19,11 @@ window.SITE = {
   categories: [
     { id: '90', title: 'Шёлковые платки', size: '90 × 90 см', material: '100% шёлк атлас', cover: 'assets/img/products/p2-1.jpg' },
     { id: '68', title: 'Шёлковые платки', size: '68 × 68 см', material: '100% шёлк атлас', cover: 'assets/img/products/p5-3.jpg' },
-    { id: '55', title: 'Шёлковые платки', size: '55 × 55 см', material: '100% шёлк', cover: 'assets/img/craft/mk-3.jpg' },
-    { id: 'scarf', title: 'Шёлковые шарфы', size: '180 × 55 см', material: '100% шёлк', cover: 'assets/img/craft/mk-1.jpg' },
-    { id: 'stole', title: 'Палантины', size: '200 × 70 см', material: 'шерсть 70% / шёлк 30%', cover: 'assets/img/craft/mk-2.jpg' },
-    { id: 'custom', title: 'Нестандартные размеры', size: 'большие и прямоугольные платки', material: 'шёлк, шерсть', cover: 'assets/img/craft/mk-4.jpg' }
+    { id: '55', title: 'Шёлковые платки', size: '55 × 55 см', material: '100% шёлк', cover: 'assets/img/products/p6-4.jpg' },
+    { id: 'scarf', title: 'Шёлковые шарфы', size: '180 × 55 см', material: '100% шёлк', cover: 'assets/img/products/p1-4.jpg' },
+    { id: 'stole', title: 'Палантины', size: '200 × 70 см', material: 'шерсть 70% / шёлк 30%', cover: 'assets/img/products/p4-5.jpg' },
+    { id: 'top', title: 'Шёлковые топы', size: 'одежда из шёлка', material: '100% шёлк атлас', cover: 'assets/img/products/p7-3.jpg', noSize: true },
+    { id: 'custom', title: 'Нестандартные размеры', size: 'большие и прямоугольные', material: 'шёлк, шерсть', cover: 'assets/img/products/p3-5.jpg', noSize: true }
   ],
 
   products: [
@@ -85,6 +86,18 @@ window.SITE = {
       text: 'В окрашивании платка участвовали листья скумпии и дуба, луковая шелуха, корень марены красильной и синий сандал.',
       images: ['p6-4', 'p6-1', 'p6-2', 'p6-3', 'p6-5'],
       hover: 'p6-1'
+    },
+    {
+      id: '7', category: 'top',
+      name: 'Сухоцветы на марене',
+      kind: 'Шёлковый топ',
+      price: 17000,
+      size: null, /* размер не указан — уточнить */
+      dyes: ['сухоцветы', 'корни марены красильной'],
+      text: 'Шёлковый топ с принтами сухоцветов. В окрашивании участвовали сухоцветы и корни марены красильной.',
+      images: ['p7-1', 'p7-2', 'p7-3', 'p7-4'],
+      hover: 'p7-3',
+      edge: false
     }
   ],
 
