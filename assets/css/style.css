@@ -113,7 +113,8 @@ body:not(.is-home) main { padding-top: 112px; }
 
 /* ---------- Главная: hero ---------- */
 .hero { display: grid; grid-template-columns: 1fr 1fr; position: relative; background: var(--ink); }
-.hero img { width: 100%; height: min(86vh, 920px); min-height: 520px; object-fit: cover; opacity: .92; }
+/* главный экран всегда ровно во весь экран: svh учитывает панели браузера на телефонах */
+.hero img { width: 100%; height: 100vh; height: 100svh; object-fit: cover; opacity: .92; }
 .hero__text {
   position: absolute; inset: auto 0 0 0; text-align: center; color: var(--white);
   padding: 0 var(--gutter-r) clamp(40px, 7vw, 88px) var(--gutter);
@@ -342,8 +343,6 @@ details p { padding-bottom: 18px; color: var(--stone); font-size: 14px; }
   .footer__top { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 900px) {
-  /* главный экран на телефонах и планшетах — ровно во весь экран (svh учитывает панели браузера) */
-  .hero img { height: 100vh; height: 100svh; min-height: 0; }
   .nav { display: none; }
   .burger { display: block; }
   .header__inner { min-height: 68px; }
