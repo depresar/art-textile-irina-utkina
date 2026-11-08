@@ -6,6 +6,11 @@
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var TG = S.brand.socials[0].url;
+  var HEADER_MODES = ['static', 'hide', 'fade'];
+  var headerMode = S.settings.headerMode || 'static';
+  if (S.settings.headerDemo) {
+    try { var hm = localStorage.getItem('iu-header-demo'); if (HEADER_MODES.indexOf(hm) !== -1) headerMode = hm; } catch (e) { /* без хранилища */ }
+  }
 
   /* ---------- Хранилище браузера (может быть недоступно) ---------- */
   function load(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
@@ -428,8 +433,17 @@
     if (toneQueued) return; toneQueued = true;
     requestAnimationFrame(function () {
       toneQueued = false;
+      /* Режим 'fade': светлая дымка под шапкой, когда она над контентом
+         (не над главным фото и не над тёмным подвалом) — тогда весь текст шапки тёмный */
+      var haze = false;
+      if (headerMode === 'fade' && window.scrollY > 10) {
+        var r = header.getBoundingClientRect(), x = r.left + r.width / 2, y = r.bottom - 10;
+        var under = document.elementsFromPoint(x, y).filter(function (n) { return !header.contains(n); })[0];
+        haze = !(under && under.closest('[data-tone="dark"]'));
+      }
+      header.classList.toggle('has-haze', haze);
       header.querySelectorAll('[data-tone-part]').forEach(function (part) {
-        part.classList.toggle('on-dark', toneUnder(part) === 'dark');
+        part.classList.toggle('on-dark', !haze && toneUnder(part) === 'dark');
       });
     });
   }
@@ -576,7 +590,7 @@
     }
   });
   /* Шапка: режим 'hide' — прячется при прокрутке вниз, появляется при прокрутке вверх */
-  var headerMode = S.settings.headerMode || 'static', lastY = window.scrollY;
+  var lastY = window.scrollY;
   function updateHeaderHide() {
     if (headerMode !== 'hide') return;
     var y = window.scrollY, dy = y - lastY;
@@ -610,5 +624,23 @@
     setTimeout(function () { pre.classList.add('is-done'); }, 6000);
   })();
 
+  /* Временный переключатель вариантов шапки (для выбора с заказчицей) */
+  function renderHeaderDemo() {
+    if (!S.settings.headerDemo) return;
+    var box = document.getElementById('header-demo') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'header-demo', className: 'header-demo' }));
+    var names = { static: '1. Исходная', hide: '2. Прячется', fade: '3. Дымка' };
+    box.innerHTML = '<span class="label">Вариант шапки</span><div>' + HEADER_MODES.map(function (m) {
+      return '<button data-header-mode="' + m + '" aria-pressed="' + (m === headerMode) + '"' + (m === headerMode ? ' class="is-active"' : '') + '>' + names[m] + '</button>';
+    }).join('') + '</div>';
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-header-mode]'); if (!b) return;
+    headerMode = b.dataset.headerMode;
+    try { localStorage.setItem('iu-header-demo', headerMode); } catch (err) { /* без хранилища */ }
+    header.classList.remove('is-hidden', 'has-haze'); lastY = window.scrollY;
+    renderHeaderDemo(); updateHeaderTone();
+  });
+
   shell(); route(); renderCookie();
+  renderHeaderDemo();
 })();
