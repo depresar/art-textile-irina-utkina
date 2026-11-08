@@ -4,6 +4,13 @@
  * category — id раздела из categories.
  */
 window.SITE = {
+  settings: {
+    /* Галочка согласия на обработку персональных данных в формах.
+       false — посетитель ставит её сам (так требует 152-ФЗ: согласие должно быть
+       активным действием). true — галочка стоит заранее. */
+    consentPrechecked: false
+  },
+
   brand: {
     name: 'Ирина Уткина',
     latin: 'IRINA UTKINA',
