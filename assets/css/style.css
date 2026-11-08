@@ -342,6 +342,8 @@ details p { padding-bottom: 18px; color: var(--stone); font-size: 14px; }
   .footer__top { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 900px) {
+  /* главный экран на телефонах и планшетах — ровно во весь экран (svh учитывает панели браузера) */
+  .hero img { height: 100vh; height: 100svh; min-height: 0; }
   .nav { display: none; }
   .burger { display: block; }
   .header__inner { min-height: 68px; }
@@ -361,7 +363,6 @@ details p { padding-bottom: 18px; color: var(--stone); font-size: 14px; }
 @media (max-width: 600px) {
   .hero { grid-template-columns: 1fr; }
   .hero img + img { display: none; }
-  .hero img { height: 78vh; min-height: 460px; }
   .cats { grid-template-columns: 1fr 1fr; gap: 28px 12px; }
   .cat, .cat:nth-child(-n+3) { grid-column: span 1; }
   .cat:first-child { grid-column: 1 / -1; }
