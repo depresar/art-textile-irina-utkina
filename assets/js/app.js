@@ -178,7 +178,7 @@
   function card(p) {
     var c = catById(p.category);
     return '<a class="card" href="#item-' + p.id + '">' +
-      '<div class="card__img"><span class="card__badge">' + t('one_of_a_kind') + '</span>' +
+      '<div class="card__img">' +
       '<img src="' + IMG(p.images[0]) + '" alt="' + esc(p.name) + '" loading="lazy">' +
       '<img src="' + IMG(p.hover) + '" alt="" loading="lazy"></div>' +
       '<div class="card__body"><span class="label card__kind">' + esc(p.kind) + (c.noSize ? '' : ' · ' + c.size) + '</span>' +
@@ -218,10 +218,9 @@
       '<section class="section section--white"><div class="wrap">' +
       '<div class="section-head"><div><span class="label">' + t('cats_label') + '</span><h2>' + t('cats_h') + '</h2></div><a class="link" href="#catalog">' + t('all_items') + '</a></div>' +
       '<div class="cats">' + cats().map(function (c) {
-        var n = catCount(c.id);
         return '<a class="cat" href="#catalog-' + c.id + '"><div class="cat__img"><img src="' + c.cover + '" alt="" loading="lazy"></div>' +
           '<div class="cat__meta"><span class="cat__title">' + c.title + '</span><span class="cat__size">' + c.size + '</span></div>' +
-          '<span class="cat__count">' + (n ? n + ' ' + plural(n) + ' ' + t('in_stock') : t('made_to_order')) + '</span></a>';
+          '</a>';
       }).join('') + '</div></div></section>' +
 
       '<section class="section"><div class="wrap">' +
@@ -244,7 +243,7 @@
           '<div class="mk-card__body"><span class="label muted">' + m.type + ' · ' + m.format + '</span><h3><a href="#mk-' + m.id + '">' + m.name + '</a></h3>' +
           '<p class="muted" style="font-size:14px">' + m.level + '</p><span class="spacer"></span>' +
           '<span class="price" style="font-size:18px">' + rub(m.price) + '</span>' +
-          '<div class="mk-card__actions"><button class="btn" data-book="' + m.id + '">' + t('book') + '</button><a class="link" href="#mk-' + m.id + '">' + t('more') + '</a></div></div></article>';
+          '<div class="mk-card__actions"><a class="link" href="#mk-' + m.id + '">' + t('more') + '</a></div></div></article>';
       }).join('') + '</div></div></section>' +
 
       aboutBlock();
@@ -278,10 +277,9 @@
   function catalog(catId) {
     var list = catId ? prods().filter(function (p) { return p.category === catId; }) : prods();
     var c = catId && catById(catId);
-    var tabs = '<a href="#catalog" class="' + (!catId ? 'is-active' : '') + '">' + t('all') + '<sup>' + S.products.length + '</sup></a>' +
+    var tabs = '<a href="#catalog" class="' + (!catId ? 'is-active' : '') + '">' + t('all') + '</a>' +
       cats().map(function (x) {
-        var n = catCount(x.id);
-        return '<a href="#catalog-' + x.id + '" class="' + (catId === x.id ? 'is-active' : '') + '">' + catShort(x) + (n ? '<sup>' + n + '</sup>' : '') + '</a>';
+        return '<a href="#catalog-' + x.id + '" class="' + (catId === x.id ? 'is-active' : '') + '">' + catShort(x) + '</a>';
       }).join('');
     var body = list.length ? '<div class="grid">' + list.map(card).join('') + '</div>' :
       '<div class="empty"><span class="label muted">' + c.material + '</span><h2>' + t('empty_h') + '</h2>' +
@@ -304,7 +302,6 @@
       }).join('') + '</div>' +
       '<aside class="info"><span class="label muted">' + esc(p.kind) + '</span><h1>' + esc(p.name) + '</h1>' +
       '<span class="price">' + rub(p.price) + '</span>' +
-      '<span class="label unique">' + t('unique') + '</span>' +
       '<p>' + esc(p.text) + '</p>' +
       '<dl class="specs"><div><dt>' + t('size') + '</dt><dd>' + size + '</dd></div><div><dt>' + t('material') + '</dt><dd>' + pc.material + '</dd></div>' +
       '<div><dt>' + t('dyes') + '</dt><dd>' + esc(p.dyes.join(', ')) + '</dd></div>' +
@@ -333,14 +330,13 @@
           m.topics.map(function (x) { return '<div><h3>' + x[0] + '</h3><p>' + x[1] + '</p></div>'; }).join('') + '</div></div>' +
           '<p class="muted">' + m.outro + '</p>' +
           '<div class="buy"><span class="price">' + rub(m.price) + '</span>' +
-          '<button class="btn" data-book="' + m.id + '">' + t('book') + '</button>' +
           (inCart(k) ? '<a class="btn btn--ghost" href="#" data-open-cart>' + t('in_cart') + '</a>' : '<button class="btn btn--ghost" data-add="' + k + '">' + t('buy_materials') + '</button>') +
           '<a class="link" href="' + TG + '" target="_blank" rel="noopener">' + t('ask') + '</a></div></div></article>';
       }).join('') +
       '<article class="mk" id="mk-offline"><div class="mk__media"><img src="' + IMG('p6-2') + '" alt="" loading="lazy"></div><div class="mk__body">' +
       '<span class="label muted">' + t('offline_label') + '</span><h2>' + t('offline_h') + '</h2>' +
       '<p class="mk__lead">' + t('offline_p') + '</p>' +
-      '<div class="buy"><button class="btn" data-book="offline">' + t('book') + '</button><a class="link" href="' + TG + '" target="_blank" rel="noopener">' + t('ask') + '</a></div></div></article>' +
+      '<div class="buy"><a class="btn btn--ghost" href="' + TG + '" target="_blank" rel="noopener">' + t('ask') + '</a></div></div></article>' +
       '</div>';
   }
 

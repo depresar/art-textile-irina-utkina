@@ -212,7 +212,8 @@ body:not(.is-home) main { padding-top: 112px; }
 
 /* О мастере */
 .about { display: grid; grid-template-columns: 5fr 6fr; gap: clamp(32px, 6vw, 110px); align-items: center; }
-.about__img { aspect-ratio: 4 / 5; overflow: hidden; }
+.about__img { aspect-ratio: 2 / 3; overflow: hidden; max-width: 100%; }
+.about__img img { object-position: center top; }
 .about__img img { width: 100%; height: 100%; object-fit: cover; }
 .about__text { display: grid; gap: 24px; max-width: 560px; min-width: 0; }
 .about__text h2 { font-size: clamp(36px, 4.6vw, 64px); }
