@@ -91,8 +91,24 @@
     var m = mkById(parts[1]); return m && { title: m.name, sub: m.type + ' · ' + m.format, price: m.price, img: m.cover };
   }
   function inCart(key) { return cart.indexOf(key) !== -1; }
-  function addToCart(key) { if (!inCart(key)) { cart.push(key); saveCart(); } openCart(); }
+  function addToCart(key) { if (!inCart(key)) { cart.push(key); saveCart(); } }
   function updateCount() { document.querySelectorAll('.cart-count').forEach(function (el) { el.textContent = cart.length ? '(' + cart.length + ')' : ''; }); }
+
+  /* ---------- Плавное появление / скрытие панелей ---------- */
+  var CLOSE_MS = reduceMotion ? 0 : 560;
+  function show(el) {
+    if (!el) return;
+    clearTimeout(el._hideT);
+    if (el.hidden) { el.hidden = false; void el.offsetWidth; }
+    requestAnimationFrame(function () { el.classList.add('is-open'); });
+  }
+  function hide(el, done) {
+    if (!el || el.hidden) return;
+    el.classList.remove('is-open');
+    clearTimeout(el._hideT);
+    el._hideT = setTimeout(function () { el.hidden = true; if (done) done(); }, CLOSE_MS);
+  }
+  function isShown(el) { return !el.hidden && el.classList.contains('is-open'); }
 
   var toastTimer;
   function toast(msg) {
@@ -127,8 +143,8 @@
         '</form>'
         : '<div class="empty" style="padding-top:24px"><p>' + t('cart_empty') + '</p><a class="link" href="#catalog" data-close-cart>' + t('go_catalog') + '</a></div>');
   }
-  function openCart() { renderCart(); document.getElementById('drawer').hidden = false; document.getElementById('overlay').hidden = false; }
-  function closeCart() { document.getElementById('drawer').hidden = true; document.getElementById('overlay').hidden = true; }
+  function openCart() { renderCart(); show(document.getElementById('overlay')); show(document.getElementById('drawer')); }
+  function closeCart() { hide(document.getElementById('drawer')); hide(document.getElementById('overlay')); }
 
   /* ---------- Запись на мастер-класс ---------- */
   function demoDates() {
@@ -162,16 +178,16 @@
       '<button class="btn" type="submit">' + t('book') + '</button>' +
       '<p class="note">' + t('b_demo') + '</p>' +
       '</form></div>';
-    m.hidden = false;
+    show(m);
   }
-  function closeBooking() { document.getElementById('booking').hidden = true; }
+  function closeBooking() { hide(document.getElementById('booking')); }
 
   /* ---------- Уведомление о cookie ---------- */
   function renderCookie() {
     var el = document.getElementById('cookie');
     if (load('iu-cookie', '') === 'ok') { el.hidden = true; return; }
     el.innerHTML = '<p>' + t('cookie_text') + '</p><button class="btn" data-cookie-ok>' + t('cookie_ok') + '</button>';
-    el.hidden = false;
+    if (el.hidden) setTimeout(function () { show(el); }, reduceMotion ? 0 : 2800); /* после прелоадера */
   }
 
   /* ---------- Общие блоки ---------- */
@@ -486,10 +502,9 @@
       '<nav class="nav nav--right" data-tone-part>' + navR + '<button data-open-cart>' + t('cart') + ' <span class="cart-count"></span></button>' + LANG() + '</nav>' +
       '<div class="header__tools" data-tone-part>' + LANG() + '<button class="label" data-open-cart>' + t('cart') + ' <span class="cart-count"></span></button></div></div>';
     document.getElementById('menu').innerHTML =
-      '<div class="mobile-menu__top">' + LOGO() + '<button class="close" data-menu-close>' + t('close') + '</button></div>' +
-      '<nav><a href="#">' + t('nav_home') + '</a><a href="#catalog">' + t('nav_catalog') + '</a>' + cats().map(function (c) {
-        return '<a href="#catalog-' + c.id + '" class="sub">' + catFull(c) + '</a>';
-      }).join('') + '<a href="#masterclasses">' + t('nav_mk') + '</a><a href="#portfolio">' + t('nav_portfolio') + '</a><a href="#contacts">' + t('nav_contacts') + '</a></nav>' +
+      '<nav>' + [['#', t('nav_home')], ['#catalog', t('nav_catalog')]].concat(cats().map(function (c) { return ['#catalog-' + c.id, catFull(c), 'sub']; }))
+        .concat([['#masterclasses', t('nav_mk')], ['#portfolio', t('nav_portfolio')], ['#contacts', t('nav_contacts')]])
+        .map(function (l, i) { return '<a href="' + l[0] + '"' + (l[2] ? ' class="sub"' : '') + ' style="--i:' + i + '">' + l[1] + '</a>'; }).join('') + '</nav>' +
       '<div class="mobile-menu__lang">' + LANG() + '</div>';
     var footer = document.getElementById('footer'), s = LEGAL.seller;
     footer.setAttribute('data-tone', 'dark');
@@ -504,12 +519,26 @@
       '<span>' + s.name + ', ' + (lang === 'en' ? 'Tax ID (INN) ' : 'ИНН ') + s.inn + '</span><span>' + studio() + '</span></div></div>';
     updateCount();
   }
-  function closeMenu() { document.getElementById('menu').hidden = true; }
+  function setBurger(open) {
+    var b = header && header.querySelector('.burger'); if (!b) return;
+    b.classList.toggle('is-open', open); b.setAttribute('aria-expanded', String(open));
+    b.setAttribute('aria-label', open ? t('close') : t('menu'));
+  }
+  function openMenu() {
+    document.body.classList.add('menu-open'); setBurger(true);
+    show(document.getElementById('menu')); updateHeaderTone();
+  }
+  function closeMenu() {
+    var m = document.getElementById('menu');
+    if (m.hidden) return;
+    setBurger(false);
+    hide(m, function () { document.body.classList.remove('menu-open'); updateHeaderTone(); });
+  }
 
   function setLang(l) {
     if (l === lang) return;
     lang = l; save('iu-lang', l);
-    var bookingOpen = !document.getElementById('booking').hidden, cartOpen = !document.getElementById('drawer').hidden;
+    var bookingOpen = isShown(document.getElementById('booking')), cartOpen = isShown(document.getElementById('drawer'));
     shell(); route(true);
     if (cartOpen) openCart();
     if (bookingOpen) closeBooking();
@@ -523,11 +552,11 @@
       if (e.target.id === 'booking') closeBooking();
       return;
     }
-    if (el.dataset.add) { addToCart(el.dataset.add); route(true); }
+    if (el.dataset.add) { addToCart(el.dataset.add); route(true); openCart(); }
     else if (el.dataset.remove) { cart = cart.filter(function (k) { return k !== el.dataset.remove; }); saveCart(); renderCart(); }
     else if (el.dataset.book) { openBooking(el.dataset.book); }
     else if (el.dataset.lang) { setLang(el.dataset.lang); }
-    else if (el.hasAttribute('data-cookie-ok')) { save('iu-cookie', 'ok'); document.getElementById('cookie').hidden = true; }
+    else if (el.hasAttribute('data-cookie-ok')) { save('iu-cookie', 'ok'); hide(document.getElementById('cookie')); }
     else if (el.hasAttribute('data-close-booking')) { closeBooking(); }
     else if (el.hasAttribute('data-sound')) {
       var v = el.parentNode.querySelector('video'); v.muted = !v.muted; if (v.paused) v.play();
@@ -535,14 +564,32 @@
     }
     else if (el.hasAttribute('data-open-cart')) { e.preventDefault(); openCart(); }
     else if (el.hasAttribute('data-close-cart') || el.id === 'overlay') { closeCart(); }
-    else if (el.hasAttribute('data-menu')) { document.getElementById('menu').hidden = false; }
+    else if (el.hasAttribute('data-menu')) { if (isShown(document.getElementById('menu'))) closeMenu(); else openMenu(); }
     else if (el.hasAttribute('data-menu-close')) { closeMenu(); }
     else if (el.hasAttribute('data-zoom')) {
-      var lb = document.getElementById('lightbox'); lb.querySelector('img').src = el.src; lb.hidden = false;
-    } else if (el.hasAttribute('data-lightbox-close')) { document.getElementById('lightbox').hidden = true; }
+      var lb = document.getElementById('lightbox'); lb.querySelector('img').src = el.src; show(lb);
+    } else if (el.hasAttribute('data-lightbox-close')) { hide(document.getElementById('lightbox')); }
   });
-  document.getElementById('lightbox').addEventListener('click', function () { this.hidden = true; });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeCart(); closeMenu(); closeBooking(); document.getElementById('lightbox').hidden = true; } });
+  document.getElementById('lightbox').addEventListener('click', function () { hide(this); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeCart(); closeMenu(); closeBooking(); hide(document.getElementById('lightbox')); } });
+
+  /* ---------- Аккордеон: плавное открытие и закрытие ---------- */
+  document.addEventListener('click', function (e) {
+    var sum = e.target.closest('details > summary'); if (!sum) return;
+    var d = sum.parentNode;
+    e.preventDefault();
+    var opening = !d.classList.contains('is-expanded');
+    d.classList.toggle('is-expanded', opening);
+    if (reduceMotion || !d.animate) { d.open = opening; return; }
+    var startH = d.offsetHeight;
+    if (d._anim) d._anim.cancel();
+    if (opening) d.open = true;
+    var endH = opening ? d.offsetHeight : sum.offsetHeight + (d.offsetHeight - d.clientHeight);
+    d.style.overflow = 'hidden';
+    d._anim = d.animate({ height: [startH + 'px', endH + 'px'] }, { duration: opening ? 520 : 420, easing: 'cubic-bezier(.2, .7, .2, 1)' });
+    d._anim.onfinish = function () { if (!opening) d.open = false; d.style.overflow = ''; d._anim = null; };
+    d._anim.oncancel = function () { d.style.overflow = ''; };
+  });
 
   function consentOk(f, errEl) {
     var box = f.querySelector('[name="consent"]');

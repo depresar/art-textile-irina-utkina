@@ -107,7 +107,6 @@ body:not(.is-home) main { padding-top: 112px; }
   padding: calc(env(safe-area-inset-top, 0px) + 24px) var(--gutter-r) calc(env(safe-area-inset-bottom, 0px) + 32px) var(--gutter);
   display: flex; flex-direction: column; gap: 40px;
 }
-.mobile-menu__top { display: flex; justify-content: space-between; align-items: center; }
 .mobile-menu nav { display: flex; flex-direction: column; gap: 18px; }
 .mobile-menu nav a { font-family: var(--display); font-size: 34px; line-height: 1.1; }
 .close { font-family: var(--label); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
@@ -252,8 +251,6 @@ body:not(.is-home) main { padding-top: 112px; }
 details { border-bottom: 1px solid var(--line); }
 details summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; padding-block: 16px; }
 details summary::-webkit-details-marker { display: none; }
-details summary::after { content: "+"; font-family: var(--body); font-size: 18px; line-height: 1; }
-details[open] summary::after { content: "–"; }
 details p { padding-bottom: 18px; color: var(--stone); font-size: 14px; }
 
 .lightbox { position: fixed; inset: 0; z-index: 80; background: rgba(20, 17, 24, .94); display: grid; place-items: center; padding: 24px; }
@@ -542,3 +539,63 @@ fieldset.field legend { font-family: var(--label); font-size: 10px; letter-spaci
 .header-demo button { font-family: var(--label); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; padding: 8px 10px; border: 1px solid rgba(251, 251, 250, .25); }
 .header-demo button.is-active { background: var(--white); color: var(--ink); border-color: var(--white); }
 @media (max-width: 600px) { .header-demo { bottom: calc(env(safe-area-inset-bottom, 0px) + 72px); } }
+
+/* ================= Анимации появления (единый стиль) ================= */
+:root { --ease-out: cubic-bezier(.2, .7, .2, 1); --ease-curtain: cubic-bezier(.7, 0, .2, 1); }
+
+/* Гамбургер → крестик */
+.burger::before, .burger::after, .burger span { transition: top .35s var(--ease-out), transform .45s var(--ease-out), opacity .25s ease; }
+.burger.is-open::before { top: 14px; transform: rotate(45deg); }
+.burger.is-open span { opacity: 0; transform: scaleX(.2); }
+.burger.is-open::after { top: 14px; transform: rotate(-45deg); }
+
+/* Мобильное меню: «шторка» сверху вниз, пункты проявляются по очереди */
+body.menu-open .header { z-index: 72; }
+.mobile-menu { padding-top: calc(env(safe-area-inset-top, 0px) + 104px); clip-path: inset(0 0 100% 0); transition: clip-path .6s var(--ease-curtain); }
+.mobile-menu.is-open { clip-path: inset(0 0 0 0); }
+.mobile-menu nav a, .mobile-menu__lang { opacity: 0; transform: translateY(16px); transition: opacity .25s ease, transform .3s ease; }
+.mobile-menu.is-open nav a, .mobile-menu.is-open .mobile-menu__lang {
+  opacity: 1; transform: none;
+  transition: opacity .6s ease, transform .7s var(--ease-out); transition-delay: calc(.22s + var(--i, 10) * 40ms);
+}
+
+/* Корзина: выезжает справа, фон затемняется */
+.overlay { opacity: 0; transition: opacity .5s ease; }
+.overlay.is-open { opacity: 1; }
+.drawer { transform: translateX(100%); transition: transform .6s var(--ease-curtain); }
+.drawer.is-open { transform: none; }
+.drawer > * { opacity: 0; transform: translateX(24px); transition: opacity .2s ease, transform .3s ease; }
+.drawer.is-open > * { opacity: 1; transform: none; transition: opacity .5s ease .25s, transform .6s var(--ease-out) .25s; }
+
+/* Окна (запись) и просмотр фото */
+.modal, .lightbox { opacity: 0; transition: opacity .45s ease; }
+.modal.is-open, .lightbox.is-open { opacity: 1; }
+.modal__box { transform: translateY(28px) scale(.98); transition: transform .6s var(--ease-out); }
+.modal.is-open .modal__box { transform: none; }
+.lightbox img { transform: scale(.96); transition: transform .6s var(--ease-out); }
+.lightbox.is-open img { transform: none; }
+
+/* Уведомление о cookie */
+.cookie { animation: none; opacity: 0; transform: translateY(16px); transition: opacity .5s ease, transform .6s var(--ease-out); }
+.cookie.is-open { opacity: 1; transform: none; }
+
+/* Аккордеон: плюс превращается в минус */
+details summary { position: relative; padding-right: 28px; }
+details summary::before, details summary::after {
+  content: ""; position: absolute; right: 4px; top: 50%; width: 12px; height: 1px; background: currentColor;
+  transition: transform .45s var(--ease-out);
+}
+details summary::after { transform: rotate(90deg); }
+details.is-expanded summary::after { transform: rotate(0deg); }
+details p { opacity: 0; transform: translateY(-6px); transition: opacity .3s ease, transform .4s var(--ease-out); }
+details.is-expanded p { opacity: 1; transform: none; transition: opacity .5s ease .1s, transform .5s var(--ease-out) .1s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu, .drawer, .drawer > *, .overlay, .modal, .modal__box, .lightbox, .lightbox img, .cookie, .mobile-menu nav a, .mobile-menu__lang, details p {
+    clip-path: none !important; transform: none !important; opacity: 1 !important;
+  }
+}
+/* Пока открыто мобильное меню — шапка всегда тёмная поверх белого фона */
+body.menu-open [data-tone-part], body.menu-open [data-tone-part].on-dark { color: var(--ink); text-shadow: none; }
+body.menu-open [data-tone-part].on-dark .logo__mono { filter: none; }
+body.menu-open .header::before { opacity: 0; }
