@@ -599,3 +599,70 @@ details.is-expanded p { opacity: 1; transform: none; transition: opacity .5s eas
 body.menu-open [data-tone-part], body.menu-open [data-tone-part].on-dark { color: var(--ink); text-shadow: none; }
 body.menu-open [data-tone-part].on-dark .logo__mono { filter: none; }
 body.menu-open .header::before { opacity: 0; }
+
+/* ---------- «В единственном экземпляре» в карточке ---------- */
+.card__unique { font-size: 10px; color: var(--stone); }
+.card__unique::before { width: 5px; height: 5px; }
+
+/* ---------- Отзывы ---------- */
+.reviews-tools, .reviews-page-tools { display: flex; align-items: center; gap: 16px 28px; flex-wrap: wrap; }
+.reviews-page-tools { justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: clamp(32px, 4vw, 56px); }
+.review-filter { display: flex; gap: 6px; flex-wrap: wrap; }
+.review-filter button {
+  font-family: var(--label); font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  padding: 9px 14px; border: 1px solid var(--line); transition: background .25s, color .25s, border-color .25s;
+}
+.review-filter button:hover { border-color: var(--ink); }
+.review-filter button.is-active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.slider-nav { display: flex; gap: 8px; }
+.slider-nav button { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--ink); display: grid; place-items: center; transition: background .25s, color .25s; }
+.slider-nav button:hover { background: var(--ink); color: var(--white); }
+.slider-nav svg { width: 18px; height: 18px; }
+.reviews-note { margin-top: -24px; margin-bottom: 28px; font-size: 13px; }
+
+.reviews-track {
+  display: flex; gap: clamp(16px, 2vw, 28px); overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; padding-bottom: 4px; overscroll-behavior-x: contain;
+}
+.reviews-track::-webkit-scrollbar { display: none; }
+.review {
+  position: relative; margin: 0; background: var(--white); padding: clamp(24px, 3vw, 36px);
+  display: flex; flex-direction: column; gap: 18px; min-width: 0;
+}
+.reviews-track .review { flex: 0 0 clamp(280px, 31vw, 430px); scroll-snap-align: start; }
+.review__mark { font-family: var(--display); font-size: 80px; line-height: .7; height: 34px; color: var(--madder); }
+.review blockquote { margin: 0; flex: 1; }
+.review p { font-family: var(--display); font-size: clamp(19px, 1.45vw, 22px); line-height: 1.45; }
+.review--clamp p { display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden; }
+.review--clamp.is-expanded p { display: block; -webkit-line-clamp: unset; }
+.review__more { align-self: flex-start; font-family: var(--label); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; border-bottom: 1px solid currentColor; padding-bottom: 3px; }
+.review figcaption { display: grid; gap: 4px; border-top: 1px solid var(--line); padding-top: 16px; }
+.review__name { font-family: var(--label); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
+.review__topic { font-size: 13px; color: var(--stone); }
+.review__pending { position: absolute; top: 20px; right: 20px; background: var(--sky); border-color: var(--sky); }
+.reviews-cta { display: flex; align-items: center; gap: 20px 32px; flex-wrap: wrap; margin-top: clamp(32px, 4vw, 48px); }
+
+.reviews-grid { columns: 3 300px; column-gap: clamp(16px, 2vw, 24px); }
+.reviews-grid .review { break-inside: avoid; margin-bottom: clamp(16px, 2vw, 24px); }
+
+.review-form-wrap {
+  display: grid; grid-template-columns: 5fr 7fr; gap: clamp(28px, 5vw, 88px);
+  background: var(--white); padding: clamp(28px, 5vw, 72px); margin-top: clamp(48px, 7vw, 96px);
+}
+.review-form__intro { display: grid; gap: 18px; align-content: start; min-width: 0; }
+.review-form__intro h2 { font-size: clamp(36px, 4vw, 56px); }
+#review-form { min-width: 0; }
+@media (max-width: 900px) { .review-form-wrap { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .reviews-track .review { flex-basis: 84%; }
+  .slider-nav { display: none; }
+  .reviews-note { margin-top: -16px; }
+}
+
+/* Шапка: на средних экранах (ноутбуки с узким окном) — гамбургер, чтобы пункты не переносились */
+.nav a, .nav button { white-space: nowrap; }
+@media (max-width: 1180px) {
+  .nav { display: none; }
+  .burger { display: block; }
+  .header__tools { display: flex; }
+}

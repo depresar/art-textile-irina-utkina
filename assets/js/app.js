@@ -199,6 +199,7 @@
       '<img src="' + IMG(p.hover) + '" alt="" loading="lazy"></div>' +
       '<div class="card__body"><span class="label card__kind">' + esc(p.kind) + (c.noSize ? '' : ' · ' + c.size) + '</span>' +
       '<span class="card__name">' + esc(p.name) + '</span>' +
+      '<span class="label unique card__unique">' + t('unique') + '</span>' +
       '<span class="card__dyes">' + esc(p.dyes.join(', ')) + '</span>' +
       '<div class="card__row"><span class="price">' + rub(p.price) + '</span><span class="link" style="font-size:10px">' + t('more') + '</span></div></div></a>';
   }
@@ -262,7 +263,56 @@
           '<div class="mk-card__actions"><a class="link" href="#mk-' + m.id + '">' + t('more') + '</a></div></div></article>';
       }).join('') + '</div></div></section>' +
 
-      aboutBlock();
+      aboutBlock() + reviewsBlock();
+  }
+
+  /* ---------- Отзывы ---------- */
+  function myReviews() { try { return JSON.parse(load('iu-my-reviews', '[]')) || []; } catch (e) { return []; } }
+  function allReviews() { return myReviews().concat(window.REVIEWS || []); }
+  function reviewCard(r, clamp) {
+    var who = r.name || (r.type === 'item' ? t('customer') : t('student'));
+    var topic = lang === 'en' ? (r.topic_en || r.topic) : r.topic;
+    return '<figure class="review' + (clamp ? ' review--clamp' : '') + '" data-type="' + r.type + '">' +
+      (r.pending ? '<span class="chip review__pending">' + t('moderation') + '</span>' : '') +
+      '<span class="review__mark" aria-hidden="true">“</span>' +
+      '<blockquote lang="ru"><p>' + esc(r.text) + '</p></blockquote>' +
+      (clamp ? '<button class="review__more" data-review-more hidden>' + t('read_more') + '</button>' : '') +
+      '<figcaption><span class="review__name">' + esc(who) + '</span><span class="review__topic">' + esc(topic) + '</span></figcaption></figure>';
+  }
+  function reviewFilter() {
+    return '<div class="review-filter" role="group" aria-label="' + t('reviews_label') + '">' +
+      [['all', t('filter_all')], ['item', t('filter_item')], ['course', t('filter_course')]].map(function (f, i) {
+        return '<button data-review-filter="' + f[0] + '" aria-pressed="' + (i === 0) + '"' + (i === 0 ? ' class="is-active"' : '') + '>' + f[1] + '</button>';
+      }).join('') + '</div>';
+  }
+  function reviewsBlock() {
+    var list = allReviews();
+    return '<section class="section" id="reviews-home"><div class="wrap">' +
+      '<div class="section-head"><div><span class="label">' + t('reviews_label') + '</span><h2>' + t('reviews_h') + '</h2></div>' +
+      '<div class="reviews-tools">' + reviewFilter() +
+      '<div class="slider-nav"><button data-slide="-1" aria-label="' + t('prev') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>' +
+      '<button data-slide="1" aria-label="' + t('next') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div></div>' +
+      (t('reviews_lang_note') ? '<p class="muted reviews-note">' + t('reviews_lang_note') + '</p>' : '') +
+      '<div class="reviews-track" data-reviews>' + list.map(function (r) { return reviewCard(r, true); }).join('') + '</div>' +
+      '<div class="reviews-cta"><a class="btn" href="#reviews-form">' + t('review_leave') + '</a><a class="link" href="#reviews">' + t('reviews_all') + '</a></div>' +
+      '</div></section>';
+  }
+  function reviewsPage() {
+    return '<div class="wrap"><header class="page-head"><span class="label muted">' + t('reviews_page_label') + '</span><h1>' + t('reviews_label') + '</h1>' +
+      '<p>' + t('reviews_page_p') + '</p>' + (t('reviews_lang_note') ? '<p>' + t('reviews_lang_note') + '</p>' : '') + '</header>' +
+      '<div class="reviews-page-tools">' + reviewFilter() + '<a class="link" href="#reviews-form">' + t('review_leave') + '</a></div>' +
+      '<div class="reviews-grid" data-reviews>' + allReviews().map(function (r) { return reviewCard(r, false); }).join('') + '</div>' +
+      '<section class="review-form-wrap" id="leave-review"><div class="review-form__intro"><span class="label muted">' + t('reviews_label') + '</span>' +
+      '<h2>' + t('rf_h') + '</h2><p class="muted">' + t('rf_p') + '</p></div>' +
+      '<form class="form" id="review-form" novalidate>' +
+      '<div class="field"><label for="r-name">' + t('f_name') + '</label><input id="r-name" name="name" autocomplete="name"></div>' +
+      '<div class="field"><label for="r-about">' + t('rf_about') + '</label><select id="r-about" name="about">' +
+      '<option value="item">' + t('rf_about_item') + '</option><option value="course">' + t('rf_about_course') + '</option></select></div>' +
+      '<div class="field"><label for="r-text">' + t('rf_text') + '</label><textarea id="r-text" name="text" rows="6"></textarea></div>' +
+      consentField('r-consent') +
+      '<p class="form-error" id="r-error" hidden></p>' +
+      '<button class="btn" type="submit">' + t('rf_send') + '</button>' +
+      '<p class="note">' + t('rf_demo') + '</p></form></section></div><div style="height:var(--section)"></div>';
   }
 
   function processBlock() {
@@ -318,6 +368,7 @@
       }).join('') + '</div>' +
       '<aside class="info"><span class="label muted">' + esc(p.kind) + '</span><h1>' + esc(p.name) + '</h1>' +
       '<span class="price">' + rub(p.price) + '</span>' +
+      '<span class="label unique">' + t('unique') + '</span>' +
       '<p>' + esc(p.text) + '</p>' +
       '<dl class="specs"><div><dt>' + t('size') + '</dt><dd>' + size + '</dd></div><div><dt>' + t('material') + '</dt><dd>' + pc.material + '</dd></div>' +
       '<div><dt>' + t('dyes') + '</dt><dd>' + esc(p.dyes.join(', ')) + '</dd></div>' +
@@ -421,6 +472,11 @@
       o.observe(el); observers.push(o);
     });
 
+    document.querySelectorAll('.review--clamp').forEach(function (r) {
+      var p = r.querySelector('p'), b = r.querySelector('[data-review-more]');
+      if (b) b.hidden = p.scrollHeight <= p.clientHeight + 2;
+    });
+
     var v = document.querySelector('.process__video video');
     if (v && reduceMotion) { v.removeAttribute('autoplay'); v.pause(); v.controls = true; }
   }
@@ -472,6 +528,8 @@
     else if (h === 'masterclasses') { html = masterclasses(); title = t('nav_mk'); }
     else if (h.indexOf('mk-') === 0) { html = masterclasses(); active = 'masterclasses'; anchor = h; title = t('nav_mk'); }
     else if (h === 'portfolio') { html = portfolio(); title = t('nav_portfolio'); }
+    else if (h === 'reviews') { html = reviewsPage(); title = t('reviews_label'); }
+    else if (h === 'reviews-form') { html = reviewsPage(); active = 'reviews'; anchor = 'leave-review'; title = t('reviews_label'); }
     else if (h === 'contacts') { html = contacts(); title = t('nav_contacts'); }
     else if (LEGAL_IDS.indexOf(h) !== -1) { html = legalPage(h); title = LEGAL.docs[LEGAL_IDS.indexOf(h)].title; }
     else if (h === 'process' || h === 'about') { html = home(); active = ''; anchor = h; }
@@ -479,7 +537,7 @@
     document.body.classList.toggle('is-home', h === '' || h === 'process' || h === 'about');
     app.innerHTML = '<div class="view">' + html + '</div>';
     if (anchor && document.getElementById(anchor)) {
-      var top = document.getElementById(anchor).getBoundingClientRect().top + window.scrollY - (h.indexOf('mk-') === 0 ? 90 : 0);
+      var top = document.getElementById(anchor).getBoundingClientRect().top + window.scrollY - (h.indexOf('mk-') === 0 || h === 'reviews-form' ? 100 : 0);
       window.scrollTo(0, top);
     } else if (keepScroll !== true) window.scrollTo(0, 0);
     document.title = (title ? title + ' — ' : '') + t('title_suffix');
@@ -492,7 +550,7 @@
   function shell() {
     document.documentElement.lang = lang;
     document.getElementById('totop').setAttribute('aria-label', t('to_top'));
-    var navL = '<a href="#catalog">' + t('nav_catalog') + '</a><a href="#masterclasses">' + t('nav_mk') + '</a>';
+    var navL = '<a href="#catalog">' + t('nav_catalog') + '</a><a href="#masterclasses">' + t('nav_mk') + '</a><a href="#reviews">' + t('reviews_label') + '</a>';
     var navR = '<a href="#portfolio">' + t('nav_portfolio') + '</a><a href="#contacts">' + t('nav_contacts') + '</a>';
     header = document.getElementById('header');
     header.innerHTML =
@@ -503,7 +561,7 @@
       '<div class="header__tools" data-tone-part>' + LANG() + '<button class="label" data-open-cart>' + t('cart') + ' <span class="cart-count"></span></button></div></div>';
     document.getElementById('menu').innerHTML =
       '<nav>' + [['#', t('nav_home')], ['#catalog', t('nav_catalog')]].concat(cats().map(function (c) { return ['#catalog-' + c.id, catFull(c), 'sub']; }))
-        .concat([['#masterclasses', t('nav_mk')], ['#portfolio', t('nav_portfolio')], ['#contacts', t('nav_contacts')]])
+        .concat([['#masterclasses', t('nav_mk')], ['#reviews', t('reviews_label')], ['#portfolio', t('nav_portfolio')], ['#contacts', t('nav_contacts')]])
         .map(function (l, i) { return '<a href="' + l[0] + '"' + (l[2] ? ' class="sub"' : '') + ' style="--i:' + i + '">' + l[1] + '</a>'; }).join('') + '</nav>' +
       '<div class="mobile-menu__lang">' + LANG() + '</div>';
     var footer = document.getElementById('footer'), s = LEGAL.seller;
@@ -512,7 +570,7 @@
       '<div class="wrap"><div class="footer__top"><div class="footer__brand">' + LOGO() +
       '<p>' + t('footer_about') + '</p></div>' +
       '<div><h4 class="label">' + t('footer_catalog') + '</h4><ul>' + cats().map(function (c) { return '<li><a href="#catalog-' + c.id + '">' + catShort(c) + '</a></li>'; }).join('') + '</ul></div>' +
-      '<div><h4 class="label">' + t('footer_studio') + '</h4><ul><li><a href="#masterclasses">' + t('nav_mk') + '</a></li><li><a href="#portfolio">' + t('nav_portfolio') + '</a></li><li><a href="#about">' + t('nav_about') + '</a></li><li><a href="#process">' + t('nav_process') + '</a></li><li><a href="#contacts">' + t('nav_contacts') + '</a></li></ul>' +
+      '<div><h4 class="label">' + t('footer_studio') + '</h4><ul><li><a href="#masterclasses">' + t('nav_mk') + '</a></li><li><a href="#reviews">' + t('reviews_label') + '</a></li><li><a href="#portfolio">' + t('nav_portfolio') + '</a></li><li><a href="#about">' + t('nav_about') + '</a></li><li><a href="#process">' + t('nav_process') + '</a></li><li><a href="#contacts">' + t('nav_contacts') + '</a></li></ul>' +
       '<h4 class="label" style="margin-top:32px">' + t('footer_social') + '</h4><ul>' + S.brand.socials.map(function (x) { return '<li><a href="' + x.url + '" target="_blank" rel="noopener">' + socialName(x) + '</a></li>'; }).join('') + '</ul></div>' +
       '<div><h4 class="label">' + t('footer_legal') + '</h4><ul>' + LEGAL.docs.map(function (d) { return '<li><a href="#' + d.id + '">' + d.title + '</a></li>'; }).join('') + '</ul></div></div>' +
       '<div class="footer__bottom"><span>© ' + new Date().getFullYear() + ' ' + t('copyright') + '</span>' +
@@ -573,6 +631,32 @@
   document.getElementById('lightbox').addEventListener('click', function () { hide(this); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeCart(); closeMenu(); closeBooking(); hide(document.getElementById('lightbox')); } });
 
+  /* ---------- Отзывы: фильтр, слайдер, «читать целиком» ---------- */
+  document.addEventListener('click', function (e) {
+    var f = e.target.closest('[data-review-filter]');
+    if (f) {
+      var type = f.dataset.reviewFilter, group = f.parentNode;
+      group.querySelectorAll('button').forEach(function (b) { var on = b === f; b.classList.toggle('is-active', on); b.setAttribute('aria-pressed', String(on)); });
+      document.querySelectorAll('[data-reviews] .review').forEach(function (r) { r.hidden = type !== 'all' && r.dataset.type !== type; });
+      var tr = document.querySelector('.reviews-track'); if (tr) tr.scrollTo({ left: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      enhance();
+      return;
+    }
+    var sl = e.target.closest('[data-slide]');
+    if (sl) {
+      var track = document.querySelector('.reviews-track'), first = track.querySelector('.review:not([hidden])');
+      var step = first ? first.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 24) : track.clientWidth * 0.8;
+      track.scrollBy({ left: +sl.dataset.slide * step, behavior: reduceMotion ? 'auto' : 'smooth' });
+      return;
+    }
+    var more = e.target.closest('[data-review-more]');
+    if (more) {
+      var card = more.closest('.review'), open = !card.classList.contains('is-expanded');
+      card.classList.toggle('is-expanded', open);
+      more.textContent = open ? t('collapse') : t('read_more');
+    }
+  });
+
   /* ---------- Аккордеон: плавное открытие и закрытие ---------- */
   document.addEventListener('click', function (e) {
     var sum = e.target.closest('details > summary'); if (!sum) return;
@@ -615,6 +699,22 @@
       if (!consentOk(f, err)) return;
       cart = []; saveCart(); closeCart(); route(true);
       toast(t('order_ok'));
+    } else if (f.id === 'review-form') {
+      e.preventDefault();
+      var rerr = f.querySelector('#r-error'), rn = f.querySelector('#r-name'), rt = f.querySelector('#r-text');
+      rerr.hidden = true;
+      rn.style.borderColor = rn.value.trim() ? '' : 'var(--madder)';
+      rt.style.borderColor = rt.value.trim().length >= 10 ? '' : 'var(--madder)';
+      if (!rn.value.trim() || rt.value.trim().length < 10) { rerr.textContent = t('rf_need'); rerr.hidden = false; return; }
+      if (!consentOk(f, rerr)) return;
+      var about = f.querySelector('#r-about').value;
+      var mine = myReviews();
+      mine.unshift({ type: about, name: rn.value.trim().slice(0, 60), topic: about === 'item' ? 'Изделия' : 'Обучение', topic_en: about === 'item' ? 'Pieces' : 'Learning', text: rt.value.trim().slice(0, 2000), pending: true });
+      save('iu-my-reviews', JSON.stringify(mine));
+      route(true);
+      var wrap = document.getElementById('leave-review');
+      wrap.querySelector('form').outerHTML = '<div class="booked"><p class="booked__when">' + t('rf_ok_h') + '</p><p class="muted">' + t('rf_ok') + '</p><p class="note">' + t('rf_demo') + '</p></div>';
+      toast(t('rf_ok_h'));
     } else if (f.id === 'booking-form') {
       e.preventDefault();
       var fd = new FormData(f), berr = f.querySelector('#b-error'), need = t('b_need_items'), miss = [];
