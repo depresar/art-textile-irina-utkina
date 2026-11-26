@@ -133,8 +133,9 @@ window.SITE = {
       price: 7000,
       level: 'Для мастеров с опытом окрашивания',
       format: 'Авторский конспект',
-      cover: 'assets/img/products/p4-3.jpg',
-      gallery: [],
+      cover: 'assets/img/courses/konspekt-5.jpg',
+      /* примеры работ по конспекту */
+      gallery: ['assets/img/courses/konspekt-1.jpg', 'assets/img/courses/konspekt-2.jpg', 'assets/img/courses/konspekt-3.jpg', 'assets/img/courses/konspekt-4.jpg', 'assets/img/courses/konspekt-5.jpg', 'assets/img/courses/konspekt-6.jpg'],
       lead: 'Более 10 лет я занимаюсь окрашиванием ткани растениями. За это время мне открылось множество приёмов и авторских находок. В конспекте я не рассказываю об основах окрашивания, а даю конкретные свои рецепты.',
       facts: ['30+ приёмов окрашивания', '70+ работ разобрано подробно'],
       audience: 'Если у вас есть опыт в окрашивании и представление о танинном и железном одеяле, и вы хотите повысить свой уровень — этот конспект для вас.',
@@ -155,8 +156,9 @@ window.SITE = {
       price: 5500,
       level: 'Для новичков и опытных мастеров',
       format: 'PDF + видео',
-      cover: 'assets/img/craft/mk-1.jpg',
-      gallery: ['assets/img/craft/mk-1.jpg', 'assets/img/craft/mk-2.jpg', 'assets/img/craft/mk-3.jpg', 'assets/img/craft/mk-4.jpg'],
+      cover: 'assets/img/courses/brazil-4.jpg',
+      /* примеры работ по мастер-классу */
+      gallery: ['assets/img/courses/brazil-1.jpg', 'assets/img/courses/brazil-2.jpg', 'assets/img/courses/brazil-3.jpg', 'assets/img/courses/brazil-4.jpg', 'assets/img/courses/brazil-5.jpg', 'assets/img/courses/brazil-6.jpg', 'assets/img/courses/brazil-7.jpg', 'assets/img/craft/mk-1.jpg', 'assets/img/craft/mk-2.jpg'],
       lead: 'Экопринт — способ окрашивания ткани листьями и травами, когда растения оставляют свои отпечатки на ткани. В этом мастер-классе я описала, как получать яркие розовые оттенки из бразильского дерева.',
       facts: ['Авторский приём', 'Пошаговое описание'],
       audience: 'Мастер-класс подходит как новичкам, так и опытным мастерам. Всё подробно и пошагово описано.',

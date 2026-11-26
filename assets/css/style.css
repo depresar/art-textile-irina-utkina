@@ -666,3 +666,36 @@ body.menu-open .header::before { opacity: 0; }
   .burger { display: block; }
   .header__tools { display: flex; }
 }
+
+/* ---------- Примеры работ в мастер-классах ---------- */
+.mk__media img:first-child { aspect-ratio: 3 / 4; }
+.mk__examples { grid-column: 1 / -1; display: grid; gap: 20px; min-width: 0; }
+.mk__examples-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 24px; }
+.mk__examples-head .label { margin-bottom: 6px; }
+.mk__examples-head .muted { font-size: 13px; }
+.strip {
+  display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity;
+  scrollbar-width: none; overscroll-behavior-x: contain; padding-bottom: 2px;
+}
+.strip::-webkit-scrollbar { display: none; }
+.strip img {
+  height: clamp(240px, 30vw, 420px); width: auto; max-width: none; flex: 0 0 auto;
+  scroll-snap-align: start; cursor: zoom-in; background: var(--line);
+  transition: opacity .3s ease;
+}
+.strip img:hover { opacity: .88; }
+@media (max-width: 600px) { .mk__examples .slider-nav { display: none; } .strip img { height: 260px; } }
+
+/* ---------- Лайтбокс: листание ---------- */
+.lightbox img { max-width: min(100%, 1200px); object-fit: contain; }
+.lightbox__nav {
+  position: absolute; top: 50%; transform: translateY(-50%); width: 56px; height: 56px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--white); border: 1px solid rgba(251, 251, 250, .35);
+  background: rgba(20, 17, 24, .25); transition: background .25s, border-color .25s;
+}
+.lightbox__nav:hover { background: rgba(251, 251, 250, .12); border-color: var(--white); }
+.lightbox__nav svg { width: 22px; height: 22px; }
+.lightbox__nav--prev { left: max(16px, env(safe-area-inset-left, 0px)); }
+.lightbox__nav--next { right: max(16px, env(safe-area-inset-right, 0px)); }
+.lightbox__count { position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); left: 50%; transform: translateX(-50%); color: rgba(251, 251, 250, .75); }
+@media (max-width: 600px) { .lightbox__nav { width: 44px; height: 44px; top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); transform: none; } .lightbox__count { bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); } }

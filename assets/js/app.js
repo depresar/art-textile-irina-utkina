@@ -387,7 +387,12 @@
       '<p>' + t('mk_page_p') + '</p></header>' +
       mks().map(function (m) {
         var k = 'm:' + m.id;
-        var media = (m.gallery.length ? m.gallery : [m.cover]).map(function (src) { return '<img src="' + src + '" alt="" data-zoom loading="lazy">'; }).join('');
+        var media = '<img src="' + m.cover + '" alt="' + esc(m.name) + '" data-zoom loading="lazy">';
+        var examples = m.gallery.length ? '<div class="mk__examples"><div class="mk__examples-head"><div><p class="label">' + t('examples_' + m.id) + '</p>' +
+          '<p class="muted">' + m.gallery.length + ' ' + t('photos') + ' · ' + t('examples_hint') + '</p></div>' +
+          '<div class="slider-nav"><button data-strip-slide="-1" aria-label="' + t('prev') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>' +
+          '<button data-strip-slide="1" aria-label="' + t('next') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>' + '</div>' +
+          '<div class="strip" data-gallery>' + m.gallery.map(function (src, i) { return '<img src="' + src + '" alt="' + esc(m.name) + ', ' + t('photo') + ' ' + (i + 1) + '" data-zoom loading="lazy">'; }).join('') + '</div></div>' : '';
         return '<article class="mk" id="mk-' + m.id + '"><div class="mk__media">' + media + '</div><div class="mk__body">' +
           '<span class="label muted">' + m.type + '</span><h2>' + m.name + '</h2>' +
           '<div class="mk__meta"><span class="chip">' + m.format + '</span><span class="chip">' + m.level + '</span>' +
@@ -398,7 +403,7 @@
           '<p class="muted">' + m.outro + '</p>' +
           '<div class="buy"><span class="price">' + rub(m.price) + '</span>' +
           (inCart(k) ? '<a class="btn btn--ghost" href="#" data-open-cart>' + t('in_cart') + '</a>' : '<button class="btn btn--ghost" data-add="' + k + '">' + t('buy_materials') + '</button>') +
-          '<a class="link" href="' + TG + '" target="_blank" rel="noopener">' + t('ask') + '</a></div></div></article>';
+          '<a class="link" href="' + TG + '" target="_blank" rel="noopener">' + t('ask') + '</a></div></div>' + examples + '</article>';
       }).join('') +
       '<article class="mk" id="mk-offline"><div class="mk__media"><img src="' + IMG('p6-2') + '" alt="" loading="lazy"></div><div class="mk__body">' +
       '<span class="label muted">' + t('offline_label') + '</span><h2>' + t('offline_h') + '</h2>' +
@@ -410,7 +415,8 @@
   function portfolio() {
     var imgs = [];
     S.products.forEach(function (p) { p.images.forEach(function (im) { imgs.push(IMG(im)); }); });
-    S.masterclasses[1].gallery.forEach(function (g, i) { imgs.splice(4 + i * 9, 0, g); });
+    var extra = S.masterclasses[0].gallery.concat(S.masterclasses[1].gallery);
+    extra.forEach(function (g, i) { imgs.splice(3 + i * 3, 0, g); });
     return '<div class="wrap"><header class="page-head"><span class="label muted">' + t('portfolio_label') + '</span><h1>' + t('nav_portfolio') + '</h1>' +
       '<p>' + t('portfolio_p') + '</p></header>' +
       '<div class="masonry">' + imgs.map(function (s) { return '<img src="' + s + '" alt="" data-zoom loading="lazy">'; }).join('') + '</div></div>' +
@@ -625,10 +631,51 @@
     else if (el.hasAttribute('data-menu')) { if (isShown(document.getElementById('menu'))) closeMenu(); else openMenu(); }
     else if (el.hasAttribute('data-menu-close')) { closeMenu(); }
     else if (el.hasAttribute('data-zoom')) {
-      var lb = document.getElementById('lightbox'); lb.querySelector('img').src = el.src; show(lb);
+      var grp = el.closest('[data-gallery], .gallery, .masonry');
+      lbList = grp ? [].slice.call(grp.querySelectorAll('img[data-zoom]')) : [el];
+      lbIndex = Math.max(0, lbList.indexOf(el));
+      lbShow(); show(document.getElementById('lightbox'));
     } else if (el.hasAttribute('data-lightbox-close')) { hide(document.getElementById('lightbox')); }
   });
-  document.getElementById('lightbox').addEventListener('click', function () { hide(this); });
+  /* ---------- Просмотр фото: листание стрелками, клавишами и свайпом ---------- */
+  var lbList = [], lbIndex = 0;
+  function lbShow() {
+    var lb = document.getElementById('lightbox'), img = lb.querySelector('img'), one = lbList.length < 2;
+    img.src = lbList[lbIndex].src; img.alt = lbList[lbIndex].alt || '';
+    lb.querySelectorAll('[data-lb]').forEach(function (b) { b.hidden = one; });
+    var c = lb.querySelector('.lightbox__count'); c.hidden = one; c.textContent = (lbIndex + 1) + ' / ' + lbList.length;
+  }
+  function lbStep(d) { if (lbList.length < 2) return; lbIndex = (lbIndex + d + lbList.length) % lbList.length; lbShow(); }
+  (function () {
+    var lb = document.getElementById('lightbox');
+    lb.insertAdjacentHTML('beforeend',
+      '<button class="lightbox__nav lightbox__nav--prev" data-lb="-1" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M15 5l-7 7 7 7"/></svg></button>' +
+      '<button class="lightbox__nav lightbox__nav--next" data-lb="1" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 5l7 7-7 7"/></svg></button>' +
+      '<span class="lightbox__count label"></span>');
+    lb.addEventListener('click', function (e) {
+      var nav = e.target.closest('[data-lb]');
+      if (nav) { e.stopPropagation(); lbStep(+nav.dataset.lb); return; }
+      if (e.target.tagName === 'IMG') { e.stopPropagation(); return; }
+      hide(lb);
+    });
+    var x0 = null;
+    lb.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', function (e) {
+      if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 40) lbStep(dx < 0 ? 1 : -1);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!isShown(lb)) return;
+      if (e.key === 'ArrowRight') lbStep(1); else if (e.key === 'ArrowLeft') lbStep(-1);
+    });
+  })();
+
+  /* Лента примеров: стрелки */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-strip-slide]'); if (!b) return;
+    var strip = b.closest('.mk__examples').querySelector('.strip');
+    strip.scrollBy({ left: +b.dataset.stripSlide * strip.clientWidth * 0.8, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeCart(); closeMenu(); closeBooking(); hide(document.getElementById('lightbox')); } });
 
   /* ---------- Отзывы: фильтр, слайдер, «читать целиком» ---------- */
